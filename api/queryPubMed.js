@@ -1,24 +1,32 @@
 var request = require("request");
 var parseString = require('xml2js').parseString;
 
+/**
+ * Helper function: uniqueText
+ * Return the text of a node, if not exist return `null`
+ */
 function uniqueText(object) {
     try {
-        if(object[0]._) 
+        if (object[0]._)
             return object[0]._;
-        else 
-            return  object[0];
+        else
+            return object[0];
     } catch (e) {
         try {
-            if(object._) 
+            if (object._)
                 return object._;
-            else 
-                return  object;
+            else
+                return object;
         } catch (e) {
             return null;
         }
     }
 }
 
+/**
+ * Helper function: uniqueObject
+ * Return the first object in the object array. If not exist return an empty obj.
+ */
 function uniqueObject(object) {
     try {
         return object[0];
@@ -26,65 +34,112 @@ function uniqueObject(object) {
         return {};
     }
 }
+
+/**
+ * Helper function: uniqueAttr
+ * Return the first attr of a node. If not exist return null.
+ */
 function uniqueAttr(object, attr) {
     try {
         return object.$[0][attr];
     } catch (e) {
         return null;
-    }    
+    }
 }
 
+
+/**
+ * Parse input object and return desired fields:
+ * TODO: 1. decouple to functions; 2. list the fields
+ */
 function extractFields(object) {
- 
-    var body = object.PubmedArticle;
-    var MedlineCitation = uniqueObject(body.MedlineCitation);
-    
-        var pmid = uniqueText(MedlineCitation.PMID);
-        
-        var dateCreated = uniqueObject(MedlineCitation.DateCreated);
-        var dateCompleted = uniqueObject(MedlineCitation.DateCompleted);
-        var dateRevised = uniqueObject(MedlineCitation.DateRevised);
-            var Article = uniqueObject(MedlineCitation.Article);
-                var Journal = uniqueObject(Article.Journal);
-                    var issnType = uniqueAttr(Journal.ISSN, 'IssnType');
-                    var issn = uniqueText(Journal.ISSN);
-                
-                    var journalTitle = uniqueText(Journal.Title);
-                    var journalAbbr = uniqueText(Journal.ISOAbbreviation);
-                var articleTitle = uniqueText(Article.ArticleTitle) ;
-                var AuthorList = uniqueObject(Article.AuthorList);
-                    var Authors = AuthorList.Author;
-                    if (!Authors.length) {
-                        Authors = [];
-                    }
-                    var authors = [];   //*
-                    for (var i = 0; i < Authors.length; i++) {
-                        var author = Authors[i];
-                        var lastName = uniqueText(author.LastName);
-                        var foreName = uniqueText(author.ForeName);
-                        var name = `${foreName} ${lastName}`; 
-                        var AffiliationInfo = uniqueObject(author.AffiliationInfo);
-                        var affiliation = uniqueText(AffiliationInfo.Affiliation);
-                        authors.push({
-                            name,
-                            lastName,
-                            foreName,
-                            affiliation
-                        });
-                    }
-                
-                var PublicationTypeList = uniqueObject(Article.PublicationTypeList);
-                    var PublicationTypes = PublicationTypeList.PublicationType;
-                    if (! PublicationTypes.length) {
-                        PublicationTypes = [];
-                    }
-                    var publicationTypes = [];  //*
-                    for (var i = 0; i < PublicationTypes.length; i++) {
-                        var publicationType =  uniqueText(PublicationTypes[i]);
-                        publicationTypes.push(publicationType);
-                    }
-                    
-    
+    // fields with `*` are exported.
+
+    // These pieces of info are critical. Should them missing the online
+    // resource is abnormal.
+    var body, MedlineCitation, pmid;
+    try {
+        body = object.PubmedArticle;
+        MedlineCitation = uniqueObject(body.MedlineCitation);
+        pmid = uniqueText(MedlineCitation.PMID);
+    } catch (e) {
+        throw 'The online resource is invalid';
+    }
+
+    // Date
+    var dateCreated;
+    var dateCompleted;
+    var dateRevised;
+    try {
+        dateCreated = uniqueObject(MedlineCitation.DateCreated);
+        dateCompleted = uniqueObject(MedlineCitation.DateCompleted);
+        dateRevised = uniqueObject(MedlineCitation.DateRevised);
+    } catch (e) {
+        // do nothing. If any of the date is available, user will see it.
+    }
+
+    // Journal info
+    var Article, Journal, issnType, issn, journalTitle, journalAbbr, articleTitle;
+    try {
+        Article = uniqueObject(MedlineCitation.Article);
+        Journal = uniqueObject(Article.Journal);
+        issnType = uniqueAttr(Journal.ISSN, 'IssnType');
+        issn = uniqueText(Journal.ISSN);
+
+        journalTitle = uniqueText(Journal.Title);
+        journalAbbr = uniqueText(Journal.ISOAbbreviation);
+        articleTitle = uniqueText(Article.ArticleTitle);
+    } catch (e) {
+        // do nothing as above.
+    } finally {
+
+    }
+
+
+    // Retrive author info
+    var AuthorList, Authors, authors, author, lastName, foreName, name,
+        AffiliationInfo, affiliation;
+    try {
+        var AuthorList = uniqueObject(Article.AuthorList);
+        var Authors = AuthorList.Author;
+        if (!Authors.length) {
+            Authors = [];
+        }
+        var authors = []; //*
+        for (var i = 0; i < Authors.length; i++) {
+            var author = Authors[i];
+            var lastName = uniqueText(author.LastName);
+            var foreName = uniqueText(author.ForeName);
+            var name = `${foreName} ${lastName}`;
+            var AffiliationInfo = uniqueObject(author.AffiliationInfo);
+            var affiliation = uniqueText(AffiliationInfo.Affiliation);
+            authors.push({
+                name,
+                lastName,
+                foreName,
+                affiliation
+            });
+        }
+    } catch (e) {
+        // Fail to parse author info
+        authors = [];
+    }
+
+    // Retrive PublicationTypeList
+    try {
+        var PublicationTypeList = uniqueObject(Article.PublicationTypeList);
+        var PublicationTypes = PublicationTypeList.PublicationType;
+        if (!PublicationTypes.length) {
+            PublicationTypes = [];
+        }
+        var publicationTypes = []; //*
+        for (var i = 0; i < PublicationTypes.length; i++) {
+            var publicationType = uniqueText(PublicationTypes[i]);
+            publicationTypes.push(publicationType);
+        }
+    } catch (e) {
+        publicationTypes = [];
+    }
 
     return {
         pmid,
@@ -98,15 +153,53 @@ function extractFields(object) {
         articleTitle,
         authors,
         publicationTypes
-    };    
+    };
 }
 
+/**
+ * parse the requested body to object. Return a promise. If parse fails,
+ * it will be rejected.
+ */
+function parseBody (body) {
+    return new Promise(function(resolve, reject) {
+        parseString(body, function(err, result) {
+            // internal parse error reporter
+            function _reportError(err) {
+                return ({
+                        'type': 'FAILD_TO_PARSE',
+                        'message': 'Can not parse target',
+                        'error': err
+                    });
+            }
+
+            if (err) {
+                reject(_reportError(err));
+            }
+
+            // when the result is valid, there will be a `pre` tag.
+            var pre = result.pre;
+            if (!pre) {
+                reject(_reportError("PMID not found"));
+            }
+
+            parseString(pre, function(err, result) {
+                if (err || result === {}) {
+                    reject(_reportError(err));
+                }
+
+                resolve(result);
+            });
+        });
+    });
+}
+
+/**
+ * exported router handler. Needed a param `pmid`.
+ */
 /// need params PMID
-module.exports = (req, res) => {
+function handler(req, res) {
     var pmid = req.params.pmid;
-
     request(`http://www.ncbi.nlm.nih.gov/pubmed/?term=${pmid}&report=xml&format=text`, (err, resp, body) => {
-
         if (err) {
             res
                 .status(404)
@@ -117,38 +210,13 @@ module.exports = (req, res) => {
                 });
             return;
         }
-
-        parseString(body, function(err, result) {
-            function _reportError(err) {
-                res.status(400)
-                    .json({
-                        'type': 'FAILD_TO_PARSE',
-                        'message': 'Can not parse target',
-                        'error': err
-                    });
-                    
-            }
-            
-            if (err) {
-                _reportError(err);
-                return ;
-            }
-            
-            var pre = result.pre;
-            if (!pre) {
-                _reportError("PMID not found");
-                return;
-            }
-            
-            parseString(pre, function(err, result) {
-                if (err || result === {}) {
-                    _reportError(err);
-                    return ;
-                }
-                res.json(extractFields(result));
-
-            });
-        });
+        parseBody(body)
+            .then((result) => {res.json(extractFields(result))})
+            .catch((error) => {res.status(400).json(error)});
     });
-
 }
+module.exports = {
+    'default': handler,
+    parseBody,
+    extractFields
+};

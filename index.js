@@ -1,10 +1,7 @@
-feathers = require ('feathers');
-
+var feathers = require ('feathers');
 var app = feathers();
-var queryPMID = require("./api/queryPubMed");
+var api = require('./api/index');
 
-app.get('/', (req, res) => res.send('meh') );
+app.use('/api',api);
 
-app.get('/query/PMID/:pmid', queryPMID);
-
-app.listen(8080);
+app.listen(8081);
