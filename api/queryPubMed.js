@@ -110,6 +110,7 @@ function extractFields(object) {
             var author = Authors[i];
             var lastName = uniqueText(author.LastName);
             var foreName = uniqueText(author.ForeName);
+            var collectiveName = uniqueText(author.CollectiveName);
             var name = `${foreName} ${lastName}`;
             var AffiliationInfo = uniqueObject(author.AffiliationInfo);
             var affiliation = uniqueText(AffiliationInfo.Affiliation);
@@ -117,6 +118,7 @@ function extractFields(object) {
                 name,
                 lastName,
                 foreName,
+                collectiveName,
                 affiliation
             });
         }
