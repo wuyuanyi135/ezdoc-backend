@@ -47,7 +47,22 @@ function uniqueAttr(object, attr) {
     }
 }
 
-
+/**
+ * Helper function that reduce array in dateObject to string
+ * @param  {object} dateObject
+ * @return {object}            modified object
+ */
+function reduceDate(dateObject) {
+    try {
+        var modified = {};
+        modified.Year = Array.isArray(dateObject.Year)?dateObject.Year[0]:dateObject.Year;
+        modified.Month = Array.isArray(dateObject.Month)?dateObject.Month[0]:dateObject.Month;
+        modified.Day = Array.isArray(dateObject.Day)?dateObject.Day[0]:dateObject.Day;
+        return modified;
+    } catch (e) {
+        return dateObject;
+    }
+}
 /**
  * Parse input object and return desired fields:
  * TODO: 1. decouple to functions; 2. list the fields
@@ -71,9 +86,9 @@ function extractFields(object) {
     var dateCompleted;
     var dateRevised;
     try {
-        dateCreated = uniqueObject(MedlineCitation.DateCreated);
-        dateCompleted = uniqueObject(MedlineCitation.DateCompleted);
-        dateRevised = uniqueObject(MedlineCitation.DateRevised);
+        dateCreated = reduceDate(uniqueObject(MedlineCitation.DateCreated));
+        dateCompleted = reduceDate(uniqueObject(MedlineCitation.DateCompleted));
+        dateRevised = reduceDate(uniqueObject(MedlineCitation.DateRevised));
     } catch (e) {
         // do nothing. If any of the date is available, user will see it.
     }
