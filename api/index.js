@@ -7,6 +7,6 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/query/pmid/:pmid', require('./queryPubMed').default);
+app.get('/query/pmid/:pmid', require('./queryWeb').default);
 
 module.exports = app;

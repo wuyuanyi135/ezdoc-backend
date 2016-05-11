@@ -100,6 +100,10 @@ function extractFields(object) {
         Journal = uniqueObject(Article.Journal);
         issnType = uniqueAttr(Journal.ISSN, 'IssnType');
         issn = uniqueText(Journal.ISSN);
+        // JournalIssue = uniqueObject(Journal.JournalIssue);
+        // pubDate = uniqueObject(JournalIssue.PubDate);
+        // volume = uniqueText(JournalIssue.Volume);
+        // issue = uniqueText(JournalIssue.issue);
 
         journalTitle = uniqueText(Journal.Title);
         journalAbbr = uniqueText(Journal.ISOAbbreviation);
