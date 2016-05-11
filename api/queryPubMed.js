@@ -41,7 +41,7 @@ function uniqueObject(object) {
  */
 function uniqueAttr(object, attr) {
     try {
-        return object.$[0][attr];
+        return object[0].$[attr];
     } catch (e) {
         return null;
     }
