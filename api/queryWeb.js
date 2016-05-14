@@ -59,8 +59,7 @@ function parseBody (body) {
             // internal parse error reporter
             function _reportError(err) {
                 return ({
-                        'type': 'FAILD_TO_PARSE',
-                        'message': 'Can not parse target',
+                        'statusText': 'Can not parse target',
                         'error': err
                     });
             }
@@ -206,6 +205,7 @@ function combineAuthors(obj) {
     }
 
     var authors = Array.isArray(obj.authors)? obj.authors : [];
+    var affiliation = authors.map((au) => au.affiliation);
     var ret = authors.reduce((previous, current) => {
         if (current.collectiveName) {
             return previous + ", " + current.collectiveName;
@@ -215,7 +215,7 @@ function combineAuthors(obj) {
     },"");
     // remove heading comma and space
     ret = /, *(.*)$/.exec(ret)[1];
-    return Object.assign({},obj,{authors:ret});
+    return Object.assign({},obj,{authors:ret, affiliation});
 }
 function filterFields(obj) {
     return {
@@ -224,7 +224,8 @@ function filterFields(obj) {
         authors: obj.authors,
         journalTitle: obj.journalTitle,
         publicationTypes: obj.publicationTypes,
-        articleTitle: obj.articleTitle
+        articleTitle: obj.articleTitle,
+        affiliation: obj.affiliation
     }
 }
 
