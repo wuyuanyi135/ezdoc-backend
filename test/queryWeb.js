@@ -27,6 +27,6 @@ describe('query source and author infomation from website', function () {
 
     it('test source', function () {
 
-        assert.equal(correctSource, queryWeb.extractSource (_window));
+        assert.equal(correctSource, queryWeb.extractCite (_window));
     });
 });
