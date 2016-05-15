@@ -58,10 +58,7 @@ function parseBody (body) {
         parseString(body, function(err, result) {
             // internal parse error reporter
             function _reportError(err) {
-                return ({
-                        'statusText': 'Can not parse target',
-                        'error': err
-                    });
+                return err
             }
 
             if (err) {
@@ -254,11 +251,7 @@ function fetchXML(url) {
         request(url, (err, resp, body) => {
             if (err) {
                 resp = Object.assign({}, resp);
-                reject({
-                    statusCode: resp.statusCode,
-                    statusText: "Failed to request the target",
-                    error: err
-                });
+                reject("Failed to request");
             } else {
                 resolve(body);
             }

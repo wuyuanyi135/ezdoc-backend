@@ -8,5 +8,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/query/pmid/:pmid', require('./queryWeb').default);
+app.use('/service', require('./service'));
+app.use('/import', require('./import.js'));
 
 module.exports = app;
