@@ -205,7 +205,7 @@ function combineAuthors(obj) {
     }
 
     var authors = Array.isArray(obj.authors)? obj.authors : [];
-    var affiliation = authors.map((au) => au.affiliation);
+    var affiliation = authors.map((au) => au.affiliation).filter((item) => item);
     var ret = authors.reduce((previous, current) => {
         if (current.collectiveName) {
             return previous + ", " + current.collectiveName;
@@ -253,6 +253,7 @@ function fetchXML(url) {
     return new Promise(function(resolve, reject) {
         request(url, (err, resp, body) => {
             if (err) {
+                resp = Object.assign({}, resp);
                 reject({
                     statusCode: resp.statusCode,
                     statusText: "Failed to request the target",
@@ -279,7 +280,7 @@ function handler (req, res) {
         .then(extractFields)
         .then(combineAuthors)
         .then(filterFields)
-        .catch(e=>console.log(e));
+        .catch((v)=>res.status(400).send(v));
 
     Promise.all([fetchWebpage, fetchXmlPage])
         .then((v)=>{
