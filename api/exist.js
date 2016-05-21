@@ -2,6 +2,7 @@ var feathers = require('feathers');
 var rest = require('feathers-rest');
 var bodyParser = require ('body-parser');
 var service = require('../js/service.js');
+var checkPMIDExistance = require('../js/checkPMIDExistance.js').default;
 var _ = require('lodash');
 
 // Create a feathers instance.
@@ -13,20 +14,9 @@ var app = feathers()
   // Turn on URL-encoded parser for REST services
   .use(bodyParser.urlencoded({extended: true}));
 
-app.post('/', (req, res) => {
-
-    var body = req.body;
-
-    var entryInfo, applicantInfo;
-
-    entryInfo = _.assign({}, body);
-
-    applicantInfo = {
-        applicant: body.applicant;
-        applicantPinyin: body.applicantPinyin;
-        department: body.department;
-        departmentPinyin: body.departmentPinyin;
-
+app.get('/pmid/:pmid', (req, res) => {
+    checkPMIDExistance(req.params.pmid);
+    res.send("OK");
 });
 
 module.exports = app;
