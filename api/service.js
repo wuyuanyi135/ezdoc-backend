@@ -42,20 +42,32 @@ var app = feathers()
           }
       });
   }
+/**
+ * Feathers hook used to validate if pmid exists
+ */
+function validatePMIDHook(hook, next) {
+    checkPMIDExistance(_.get(hook,'data.pmid'))
+        .then((value) => {
+            if (value) {
+                throw new errors.Conflict("PMID Exists");
+            }
+            next();
+        })
+        .catch((err) => {next(err,hook)});
+};
 
-  app.service('/entry').before ({
-      create: function(hook, next) {
-          checkPMIDExistance(_.get(hook,'data.pmid'))
-              .then((value) => {
-                  if (value) {
-                      throw new errors.Conflict("PMID Exists");
-                  }
-                  next();
-              })
-              .catch((err) => {next(err,hook)});
-      }
-  });
+function appendDateHook(hook, next) {
+    hook.data.createdAt = Date.now();
+    hook.data.LastModifiedAt = Date.now();
+    next();
+}
 
+app.service('/entry').before ({
+    create: [validatePMIDHook, appendDateHook]
+});
+app.service('/applicant').before({
+    create: [appendDateHook]
+})
 module.exports = {
     'default': app,
     entryService,
