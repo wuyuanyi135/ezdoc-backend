@@ -7,7 +7,7 @@ var db = require('../js/database.js');
 var _ = require('lodash');
 var service = require('feathers-nedb');
 var entryDBService = service({Model: db.entryDB});
-var applicantDBService = service({Model: db.applicantDB});
+
 // Create a feathers instance.
 var app = feathers()
   // Enable REST services
@@ -19,10 +19,8 @@ var app = feathers()
   .use(bodyParser.urlencoded({extended: true}));
 
   app.use('/entry', entryDBService);
-  app.use('/applicant', applicantDBService);
 
   var entryService = app.service('/entry');
-  var applicantService = app.service('/applicant');
 
  /**
   * Returning `true`: has existance
@@ -71,19 +69,10 @@ function appendDateHook(hook, next) {
 }
 
 entryService.before ({
-    create: [validatePMIDHook, appendDateHook]
-});
-
-applicantService.before({
-    create: [appendDateHook]
-});
-
-applicantService.after({
-     find: [hooks.populate('_populate',{ service: 'entry', field:'_refId'})]
+    create: [validatePMIDHook, hooks.pluck('data', 'applicant'), appendDateHook]
 });
 
 module.exports = {
     'default': app,
-    entryService,
-    applicantService
+    entryService
 };

@@ -11,31 +11,13 @@ module.exports = {
             // if (!pmid) {
             //     throw ( new errors.BadRequest('Excepting PMID'));
             // }
+
             service.entryService.create(data.data)
-                .then((createdEntry) => {
-                    // successfully create entry document
-                    var applicant = _.castArray(data.applicant);
-                    if (applicant.length) {
-                        // if (!createdEntry.pmid) {
-                        //     reject( new errors.BadRequest("Internal Error: entry does not have PMID"));
-                        //     return;
-                        // }
-                        applicant.map((item, index) => {
-
-                            if (createdEntry.pmid) {
-                                item.pmid = createdEntry.pmid;
-                            }
-                            item._refId = createdEntry._id;
-                        });
-                        service.applicantService.create(applicant)
-                            .then((createdApplicant) => resolve({createdApplicant, createdEntry}));
-                    } else {
-                        resolve({createdEntry});
-                        return;
-                    }
-                })
-                .catch((err) => {reject(err)});
+            .then((createdEntry) => {
+                resolve({createdEntry});
+                return;
+            })
+            .catch((err) => {reject(err)});
         });
-
     }
 }

@@ -47,51 +47,43 @@ var serviceModel = {
                                         } else {
                                             return null;    // so can be filtered by without
                                         }
-
                                         return {string, original:v}
                                     })
                                     .without(null)
                                     .take(10)  //change the order to optimize the performance
-
                     }]);
                 }).catch(err => {reject(err)});
-            } else { // if is number
+            } else { // if is not a number
                 // is literatural string
                 var entryPromise = service.entryService.find({
                     query: {
-                        $select: ['_id', 'pmid', 'articleTitle', 'authors']
+                        $select: ['_id', 'pmid', 'articleTitle', 'applicant']
                     }
                 })
                 .then(value => {
                     return [{
                         title: "Title",
                         matching: fuzzy.filter(q, value, titleOptions)
+                    }, {
+                        title: "Applicant",
+                        matching: _(value)
+                                    .map('applicant')
+                                    .flatten()
+                                    .map((item) => {
+                                        if (fuzzy.test(q, `${item.applicant} ${item.applicantPinyin}`)) {
+                                            return {string: item.applicant, original:item};
+                                        } else {
+                                            return null;
+                                        }
+                                    })
+                                    .without(null)
+                                    .uniqWith((a,b) => a.original.applicant === b.original.applicant)
+                                    .take(10)
                     }];
                 });
-
-                var applicantPromise = service.applicantService.find({
-                    query: {
-                        $select: ['_id', 'pmid', 'applicant', 'applicantPinyin']
-                    }
-                })
-                .then(value => ({
-                    title: "Applicant",
-                    matching: _(value).map((item) => {
-                                    if (fuzzy.test(q, `${item.applicant} ${item.applicantPinyin}`)) {
-                                        return {string: item.applicant, original:item};
-                                    } else {
-                                        return null;
-                                    }
-                                })
-                                .without(null)
-                                .take(10)
-                    })
-                );
-
-                Promise.all([applicantPromise, entryPromise])
-                    .then((suggestions)=>{
-                        resolve(_.flatten(suggestions));
-                    });
+                entryPromise.then((suggestions)=>{
+                    resolve(_.flatten(suggestions));
+                });
             } //else
 
         });

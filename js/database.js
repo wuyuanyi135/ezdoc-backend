@@ -5,12 +5,6 @@ var entryDB = new NeDB({
   autoload: true
 });
 
-var applicantDB = new NeDB({
-    filename: 'database/applicant.db',
-    autoload: true
-});
-
 module.exports = {
-    entryDB,
-    applicantDB
+    entryDB
 };
