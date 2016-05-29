@@ -24,8 +24,14 @@ var app = feathers()
   var entryService = app.service('/entry');
   var applicantService = app.service('/applicant');
 
-  function checkPMIDExistance (pmid) {
-      return new Promise(function(resolve, reject) {
+ /**
+  * Returning `true`: has existance
+  * Returning `false`: no existance
+  *
+  * if no PMID field, its always false
+  */
+ function checkPMIDExistance (pmid) {
+     return new Promise(function(resolve, reject) {
           if (pmid) {
               entryService.find({ query: { pmid, $limit: 1 } })
                   .then((arrValue) => {
@@ -38,7 +44,9 @@ var app = feathers()
                       }
                   });
           } else {
-              reject ( new errors.BadRequest("PMID Not Provided") );
+              // no-PMID type entry is now accepted
+              //   reject ( new errors.BadRequest("PMID Not Provided") );
+              resolve(false);
           }
       });
   }
@@ -62,12 +70,18 @@ function appendDateHook(hook, next) {
     next();
 }
 
-app.service('/entry').before ({
+entryService.before ({
     create: [validatePMIDHook, appendDateHook]
 });
-app.service('/applicant').before({
+
+applicantService.before({
     create: [appendDateHook]
-})
+});
+
+applicantService.after({
+     find: [hooks.populate('_populate',{ service: 'entry', field:'_refId'})]
+});
+
 module.exports = {
     'default': app,
     entryService,
