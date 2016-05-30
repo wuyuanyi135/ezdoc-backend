@@ -25,6 +25,7 @@ app.get('/query/pmid/:pmid', require('./queryMedline.js').default);
 app.use('/service', require('./service').default);
 app.use('/import', require('./services/import.js'));
 app.use('/suggestion', require('./services/suggestion.js').default);
+app.use('/sci', require('./services/sciInfo.js').model);
 // app.use('/exist', require('./exist.js'));
 
 module.exports = app;
