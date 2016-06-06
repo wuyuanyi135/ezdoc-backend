@@ -7,6 +7,7 @@ var db = require('../js/database.js');
 var _ = require('lodash');
 var service = require('feathers-nedb');
 var entryDBService = service({Model: db.entryDB});
+var historyDBService = service({Model: db.historyDB});
 
 // Create a feathers instance.
 var app = feathers()
@@ -19,9 +20,10 @@ var app = feathers()
   .use(bodyParser.urlencoded({extended: true}));
 
   app.use('/entry', entryDBService);
+  app.use('/history', historyDBService);
 
   var entryService = app.service('/entry');
-
+  var historyService = app.service('/history');
  /**
   * Returning `true`: has existance
   * Returning `false`: no existance
@@ -68,11 +70,32 @@ function appendDateHook(hook, next) {
     next();
 }
 
+function populateRecentExport(hook, next) {
+    let p = Promise.resolve();
+    _.castArray(hook.result).map((item, index) => {
+        p = p.then(() => (
+            entryService.get(item.refId)
+        ))
+        .then(value => {
+            item.articleTitle = value.articleTitle;
+            item.pmid = value.pmid;
+        });
+    });
+    //p.then(value => {console.log(hook);})
+    p.then(() => next(null, hook));
+}
 entryService.before ({
     create: [validatePMIDHook, hooks.pluck('data', 'applicant'), appendDateHook]
 });
+historyService.before({
+    create: [appendDateHook]
+});
+historyService.after({
+    find: [populateRecentExport]
+})
 
 module.exports = {
     'default': app,
-    entryService
+    entryService,
+    historyService
 };
