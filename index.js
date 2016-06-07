@@ -16,5 +16,6 @@ var app = feathers()
 var api = require('./api/index');
 
 app.use('/api',api);
+app.use(feathers.static('static'));
 app.use(errorHandler());
 app.listen(8081);

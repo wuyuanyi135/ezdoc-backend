@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+        <title>Print</title>
+        <style>
+
+
+            body {
+                margin: 50px;
+                padding: 0px;
+                width: 100%;
+                background: #ccc;
+            }
+            .container {
+                width: 210mm;
+                height: 297mm;
+                padding-left: 1.25in;
+                padding-right: 1.25in;
+                padding-top: 1.39in;
+                padding-bottom: 1in;
+                border: black solid 1px;
+            }
+            .header-box {
+                text-align: center;
+
+            }
+            .first-header {
+                font-family: STXingkai;
+            }
+            .second-header {
+                font-family: STSong;
+                font-size: 28px;
+            }
+            .container {
+                background: white;
+            }
+            .table-box {
+                font-family: STSong;
+            }
+            .table-box .row:last-child {
+                border-bottom: black solid 1px;
+            }
+
+            .row {
+                height:0.43in;
+                display: flex;
+                border-top: black solid 1px;
+            }
+            .cell {
+                border-left: black solid 1px;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+                width: 0px;
+                display: flex;
+            }
+
+            .row .cell:last-child {
+                border-right: black solid 1px;
+            }
+
+            .label {
+                flex-basis: 0.71in;
+                font-size: 18px;
+            }
+            .label-article {
+                width: 0.55in;
+                display: inline-flex;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            .entry {
+                flex-grow: 1;
+                font-size: 16px;
+                hyphens: auto;
+            }
+
+            /* article */
+            .article-row {
+                /*min-height: 2.8in;*/
+                display: flex;
+                flex-direction: row;
+                height: auto;
+                /*width: 100%;*/
+                align-items: stretch;
+            }
+            .container-article {
+                flex-grow: 1;
+            }
+            .container-article-row {
+                min-height: 60px;
+                display: flex;
+                flex-grow: 1;
+                border-bottom: black solid 1px;
+            }
+            .container-article .container-article-row:last-child {
+                border-bottom: none;
+            }
+            .container-article-row .label {
+                flex-basis: 0.8in;
+                flex-shrink: 0;
+            }
+            .container-article-row .entry {
+                flex-grow: 1;
+                flex-shrink: 0;
+                padding-left: 10px;
+                padding-right: 5%;
+                justify-content: flex-start;
+            }
+            .flex-grow {
+                flex-grow: 1;
+                flex-shrink: 0;
+            }
+            .flex-grow-3 {
+                flex-grow: 3;
+                flex-shrink: 0;
+            }
+
+            .result-row {
+                height: auto;
+                min-height: 1.89in;
+            }
+
+            .result-container {
+                display: block;
+                text-align: right;
+                padding-top: 0.7in;
+                padding-bottom: 0.2in;
+                padding-right: 0.7in;
+            }
+            @media print {
+
+                @page {
+                    margin: 0;
+                    size: A4;
+                }
+
+                body {
+                    margin: 0px;
+                    padding: 0px;
+                    width: 100%;
+                    background: none;
+                }
+
+                .container {
+                    width: 210mm;
+                    height: 297mm;
+                    padding-left: 1.25in;
+                    padding-right: 1.25in;
+                    padding-top: 1.39in;
+                    padding-bottom: 1in;
+                    border: none;
+                }
+            }
+        </style>
+        <script type="text/javascript">
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        </script>
+    </head>
+    <body>
+        <div class="container" contenteditable="true">
+            <div class="header-box">
+                <h1 class="first-header">温州医科大学附属第一医院图书馆</h1>
+                <h2 class="second-header">SCI论文收录检索证明</h2>
+            </div>
+
+            <div class="table-box">
+                <div class="row applicant-row">
+                    <div class="cell label"><span>姓名</span></div>
+                    <div class="cell entry"><span id="applicant"><script>document.write(getParameterByName("applicant"))</script><span></div>
+                    <div class="cell label"><span>科室<span></div>
+                    <div class="cell entry"><span id="department"><script>document.write(getParameterByName("department"))</script><span></div>
+                    <div class="cell label"><span>日期<span></div>
+                    <div class="cell entry"><span id="date"><script>document.write(new Date().toISOString().slice(0, 10))</script><span></div>
+                </div>
+
+                <div class="row article-row">
+                    <div class="cell label label-article"><span>收<br>录<br>文<br>献</span></div>
+                    <div class="container-article">
+                        <div class="container-article-row">
+                            <div class="cell label">Author(s)</div>
+                            <div class="cell entry"><script>document.write(getParameterByName('authors'))</script></div>
+                        </div>
+
+                        <div class="container-article-row"  style="min-height: 80px">
+                            <div class="cell label">Title</div>
+                            <div class="cell entry"><script>document.write(getParameterByName('title'))</script></div>
+                        </div>
+                        <div class="container-article-row">
+                            <div class="cell label">Source</div>
+                            <div class="cell entry"><script>document.write(getParameterByName('source'))</script></div>
+                        </div>
+                        <div class="container-article-row">
+                            <div class="cell label">ISSN</div>
+                            <div class="cell entry"><script>document.write(getParameterByName('issn'))</script></div>
+                        </div>
+                        <div class="container-article-row">
+                            <div class="cell label">Address1</div>
+                            <div class="cell entry"><script>document.write(getParameterByName('address'))</script></div>
+                        </div>
+                        <div class="container-article-row">
+                            <div class="cell label">PT</div>
+                            <div class="cell entry"><script>document.write(getParameterByName('pt'))</script></div>
+                        </div>
+                        <div class="container-article-row">
+                            <div class="cell label">PMID</div>
+                            <div class="cell entry"><script>document.write(getParameterByName('pmid'))</script></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row result-row">
+                    <div class="cell label label-article">检<br>索<br>结<br>果</div>
+                    <div class="cell flex-grow result-container">
+                        <div class="pull-right">期刊属SCI收录期刊，<span id="sci_year"><script>document.write(getParameterByName('year'))</script></span>年的影响因子：<span id="sci_factor"><script>document.write(getParameterByName('impact'))</script></span></div>
+                        <div class="pull-right">SCI分区: <span id="sci_section"><script>document.write(getParameterByName('section'))</script></span>区</div>
+                        <div class="pull-right"><img src="img/sign.png" alt="signature" width="150px" /></div>
+                    </div>
+                </div>
+
+                <div class="row officer-row">
+                    <div class="cell flex-grow">检索员</div>
+                    <div class="cell flex-grow">周潇洒</div>
+                    <div class="cell flex-grow-3">Email：zhouxs2004@163.com</div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            document.querySelector('[contenteditable=true]').onkeydown = (function(e) {
+                // trap the return key being pressed
+                if (event.keyCode != 13)
+                    return true;
+
+                var docFragment = document.createDocumentFragment();
+
+                //add a new line
+                var newEle = document.createTextNode('\n');
+                docFragment.appendChild(newEle);
+
+                //add the br, or p, or something else
+                newEle = document.createElement('br');
+                docFragment.appendChild(newEle);
+
+                //make the br replace selection
+                var range = window.getSelection().getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(docFragment);
+
+                //create a new range
+                range = document.createRange();
+                range.setStartAfter(newEle);
+                range.collapse(true);
+
+                //make the cursor there
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+
+                return false;
+            });
+          </script>
+    </body>
+</html>

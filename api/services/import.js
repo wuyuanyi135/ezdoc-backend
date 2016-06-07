@@ -12,7 +12,7 @@ module.exports = {
             //     throw ( new errors.BadRequest('Excepting PMID'));
             // }
 
-            service.entryService.create(data.data)
+            service.entryService.create(data)
             .then((createdEntry) => {
                 resolve({createdEntry});
                 return;

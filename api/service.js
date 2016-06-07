@@ -53,7 +53,10 @@ var app = feathers()
 /**
  * Feathers hook used to validate if pmid exists
  */
-function validatePMIDHook(hook, next) {
+function validatePMIDAndTitleHook(hook, next) {
+    if ( !_.get(hook,'data.pmid') && !_.get(hook,'data.articleTitle') ) {
+        throw new errors.BadRequest("Require either pmid or article title");
+    }
     checkPMIDExistance(_.get(hook,'data.pmid'))
         .then((value) => {
             if (value) {
@@ -79,13 +82,16 @@ function populateRecentExport(hook, next) {
         .then(value => {
             item.articleTitle = value.articleTitle;
             item.pmid = value.pmid;
-        });
+        })
+        .catch(err => {item.shouldRemove = true});
     });
     //p.then(value => {console.log(hook);})
-    p.then(() => next(null, hook));
+    p.then(() => {
+        _.remove(hook.result, {shouldRemove: true});
+        next(null, hook)});
 }
 entryService.before ({
-    create: [validatePMIDHook, hooks.pluck('data', 'applicant'), appendDateHook]
+    create: [validatePMIDAndTitleHook, hooks.pluck('data', 'applicant'), appendDateHook]
 });
 historyService.before({
     create: [appendDateHook]

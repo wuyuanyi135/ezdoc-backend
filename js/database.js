@@ -5,7 +5,7 @@ var entryDB = new NeDB({
   autoload: true
 });
 var historyDB = new NeDB({
-    filename: 'database/history',
+    filename: 'database/history.db',
     autoload: true
 })
 module.exports = {
