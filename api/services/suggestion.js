@@ -47,6 +47,7 @@ var serviceModel = {
                                         } else {
                                             return null;    // so can be filtered by without
                                         }
+                                        v.suggestionType = 'pmid';
                                         return {string, original:v}
                                     })
                                     .without(null)
@@ -63,14 +64,16 @@ var serviceModel = {
                 .then(value => {
                     return [{
                         title: "Title",
-                        matching: fuzzy.filter(q, value, titleOptions)
+                        matching: fuzzy.filter(q, value, titleOptions).map((item) => (_.set(item, 'original.suggestionType', 'title')))
                     }, {
                         title: "Applicant",
                         matching: _(value)
                                     .map('applicant')
                                     .flatten()
                                     .map((item) => {
+                                        let ret;
                                         if (fuzzy.test(q, `${item.applicant} ${item.applicantPinyin}`)) {
+                                            item.suggestionType = 'applicant';
                                             return {string: item.applicant, original:item};
                                         } else {
                                             return null;
