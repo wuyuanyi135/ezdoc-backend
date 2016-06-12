@@ -12,6 +12,7 @@
                 margin: 50px;
                 padding: 0px;
                 width: 100%;
+                font-size: 20px;
                 background: #ccc;
             }
             .container {
@@ -29,6 +30,8 @@
             }
             .first-header {
                 font-family: STXingkai;
+                font-weight: normal;
+                font-size: 28px;
             }
             .second-header {
                 font-family: STSong;
@@ -64,7 +67,7 @@
 
             .label {
                 flex-basis: 0.71in;
-                font-size: 18px;
+                font-size: 20px;
             }
             .label-article {
                 width: 0.55in;
@@ -74,7 +77,8 @@
             }
             .entry {
                 flex-grow: 1;
-                font-size: 16px;
+                font-size: 20px;
+                line-height: 1.4;
                 hyphens: auto;
             }
 
@@ -100,7 +104,7 @@
                 border-bottom: none;
             }
             .container-article-row .label {
-                flex-basis: 0.8in;
+                flex-basis: 1in;
                 flex-shrink: 0;
             }
             .container-article-row .entry {
@@ -108,6 +112,8 @@
                 flex-shrink: 0;
                 padding-left: 10px;
                 padding-right: 5%;
+                padding-top: 10px;
+                padding-bottom: 10px;
                 justify-content: flex-start;
             }
             .flex-grow {
@@ -121,15 +127,24 @@
 
             .result-row {
                 height: auto;
-                min-height: 1.89in;
+                min-height: 2in;
             }
 
             .result-container {
                 display: block;
                 text-align: right;
-                padding-top: 0.7in;
+                padding-top: 0.9in;
                 padding-bottom: 0.2in;
-                padding-right: 0.7in;
+                padding-right: 0.9in;
+            }
+
+            .pull-right {
+                margin-bottom: 10px;
+                font-size: 20px;
+            }
+
+            .bold {
+                font-weight:600;
             }
             @media print {
 
@@ -154,6 +169,8 @@
                     padding-bottom: 1in;
                     border: none;
                 }
+
+
             }
         </style>
         <script type="text/javascript">
@@ -223,8 +240,8 @@
                 <div class="row result-row">
                     <div class="cell label label-article">检<br>索<br>结<br>果</div>
                     <div class="cell flex-grow result-container">
-                        <div class="pull-right">期刊属SCI收录期刊，<span id="sci_year"><script>document.write(getParameterByName('year'))</script></span>年的影响因子：<span id="sci_factor"><script>document.write(getParameterByName('impact'))</script></span></div>
-                        <div class="pull-right">SCI分区: <span id="sci_section"><script>document.write(getParameterByName('section'))</script></span>区</div>
+                        <div class="pull-right">期刊属SCI收录期刊，<span id="sci_year"><script>document.write(getParameterByName('year'))</script></span>年的影响因子：<span class="bold" id="sci_factor"><script>document.write(getParameterByName('impact'))</script></span></div>
+                        <div class="pull-right">SCI分区: <span class="bold" id="sci_section"><script>document.write(getParameterByName('section'))</script></span>区</div>
                         <div class="pull-right"><img src="img/sign.png" alt="signature" width="150px" /></div>
                     </div>
                 </div>

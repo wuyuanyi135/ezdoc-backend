@@ -1,6 +1,6 @@
 var request = require('request');
 const checkInterval = 5 * 1000 * 60; // 5min
-const url = 'http://localhost:8081/api/sciserver'
+const url = 'http://localhost:8081/api/sciserver';
 
 const checkLoginHandler = () => {
     console.log('checking login status');
@@ -9,7 +9,9 @@ const checkLoginHandler = () => {
         try {
             _body = JSON.parse(body);
         } catch (e) {
-            console.log('Fail to parse checklogin json', e);
+            console.error('Fail to parse checklogin json', e);
+            console.error('The parsed object is', body);
+            return;
         }
 
         if (err) {
@@ -25,6 +27,7 @@ const checkLoginHandler = () => {
                     _body = JSON.parse(body);
                 } catch (e) {
                     console.log('Fail to parse login json', e);
+                    return;
                 }
 
                 if (err) {
@@ -48,7 +51,7 @@ flushTimer = () => {
     if (! checkIntervalTimer) {
         // first run
         console.log('first run, will login after 1s');
-        setTimeout(checkLoginHandler,1000);
+        setTimeout(checkLoginHandler,8000);
     } else {
         clearInterval(checkIntervalTimer);
     }
