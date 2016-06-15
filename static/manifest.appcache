@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# dd75dcb29190a271e61b
+# 2f1a5337fca1034ae092
 
 f4769f9bdb7466be65088239c12046d1.eot
 f721466883998665b87923b92dea655b.svg
@@ -10,9 +10,9 @@ manifest.json
 serviceworker.js
 js/app.js
 main.css
+img/logo.png
 img/sign.png
 img/favicon.png
-img/logo.png
 print.html
 index.html
 
