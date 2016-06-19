@@ -6,8 +6,6 @@
 
         <title>Print</title>
         <style>
-
-
             body {
                 margin: 50px;
                 padding: 0px;
@@ -26,7 +24,6 @@
             }
             .header-box {
                 text-align: center;
-
             }
             .first-header {
                 font-family: STXingkai;
@@ -46,7 +43,6 @@
             .table-box .row:last-child {
                 border-bottom: black solid 1px;
             }
-
             .row {
                 height:0.43in;
                 display: flex;
@@ -60,11 +56,9 @@
                 width: 0px;
                 display: flex;
             }
-
             .row .cell:last-child {
                 border-right: black solid 1px;
             }
-
             .label {
                 flex-basis: 0.71in;
                 font-size: 20px;
@@ -81,7 +75,6 @@
                 line-height: 1.4;
                 hyphens: auto;
             }
-
             /* article */
             .article-row {
                 /*min-height: 2.8in;*/
@@ -124,12 +117,10 @@
                 flex-grow: 3;
                 flex-shrink: 0;
             }
-
             .result-row {
                 height: auto;
                 min-height: 2in;
             }
-
             .result-container {
                 display: block;
                 text-align: right;
@@ -154,19 +145,16 @@
                 cursor: pointer;
             }
             @media print {
-
                 @page {
                     margin: 0;
                     size: A4;
                 }
-
                 body {
                     margin: 0px;
                     padding: 0px;
                     width: 100%;
                     background: none;
                 }
-
                 .container {
                     width: 210mm;
                     height: 297mm;
@@ -270,32 +258,25 @@
                 // trap the return key being pressed
                 if (event.keyCode != 13)
                     return true;
-
                 var docFragment = document.createDocumentFragment();
-
                 //add a new line
                 var newEle = document.createTextNode('\n');
                 docFragment.appendChild(newEle);
-
                 //add the br, or p, or something else
                 newEle = document.createElement('br');
                 docFragment.appendChild(newEle);
-
                 //make the br replace selection
                 var range = window.getSelection().getRangeAt(0);
                 range.deleteContents();
                 range.insertNode(docFragment);
-
                 //create a new range
                 range = document.createRange();
                 range.setStartAfter(newEle);
                 range.collapse(true);
-
                 //make the cursor there
                 var sel = window.getSelection();
                 sel.removeAllRanges();
                 sel.addRange(range);
-
                 return false;
             });
           </script>
