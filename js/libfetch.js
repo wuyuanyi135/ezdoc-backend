@@ -22,10 +22,14 @@ function login(casper, done) {
     casper.waitForSelector(loginFormSelector, function() {
 		echo('[login] login form loaded');
     	output += 'Login form loaded, start to fill the form\r\n';
-    	this.fill(loginFormSelector, {
+		this.evaluate(function(username, password){
+			document.querySelector('#Username').value = username;
+			document.querySelector('#Password').value = password;
+		}, config.username, config.password);
+    	/*this.fill(loginFormSelector, {
     		'Username': config.username,
     		'Password': config.password
-    	}, false);
+    	}, false);*/
     	this.click('#login_button');
 		echo('[login] login button clicked');
     },
@@ -36,7 +40,7 @@ function login(casper, done) {
 		_done(output, 'fail');
 	});
 
-    casper.waitForUrl('http://www.fenqubiao.com/Core/Category.aspx',
+    casper.waitForUrl('http://www.fenqubiao.com/Core/CategoryList.aspx',		//Url changed on 2016 Nov 4
 		function() {
 			//then
 			echo('[login] login success');
@@ -97,16 +101,53 @@ function queryIssn(casper, done, issn, year) {
 		document.querySelector("#ContentPlaceHolder1_tbxTitleorIssn").value = issn;
 		document.querySelector('#ContentPlaceHolder1_btnSearch').click();
 	},issn);
+	
+	// 2016 Nov 4 changed search process
+	casper.waitForSelector('#report', function() {
+		if ( issn != casper.fetchText('#report tbody tr:nth-child(1) td:nth-child(3)')) {
+			echo("[queryIssn] issn validation failed!");
+			log += 'issn validation failed!';
+			_done(log, 'fail');
+			casper.bypass(999);
+			return;
+		} else {
+			// validation succeed
+			var pageHref = this.evaluate(function() {
+				return document.querySelector('#report tbody tr:nth-child(1) td:nth-child(2) a').href;
+			});
+			echo("[queryIssn] redirecting to pageHref = " + pageHref);
+			this.open(pageHref);
+		}
+	}, function() {
+		// timeout
+		echo("[queryIssn] search result load failed!");
+		log += 'search result load failed';
+		_done(log, 'fail');
+		casper.bypass(999);
+		return;
+	});
 
+	
 	var result = [];
 	casper.waitForSelector('#detailJournal', function() {
 		var yearList = this.evaluate(function(){
-			return [].slice.call(
+			// year
+			var yearNumbers = document.querySelector("#impactfactorlist tr td").colSpan - 1;
+			var targetRow = Array.prototype.slice.call(document.querySelectorAll("#impactfactorlist tr:nth-child(2) td"));
+			var targetCells = targetRow.slice(0, yearNumbers);
+			var years = targetCells.map(function(item) {
+				return item.innerHTML.slice(0, -1);
+			});
+			
+			return years;
+			// factor
+			/*return [].slice.call(
 				document.querySelectorAll("#ContentPlaceHolder1_dplYear > option")
 			)
-			.map(function(item){return item.textContent});
+			.map(function(item){return item.textContent});*/
 		});
 
+		
 		var keyYears = [];
 		if (_year.length > 0) {
 			// user provides year, filter unavailable years
@@ -126,25 +167,30 @@ function queryIssn(casper, done, issn, year) {
 			casper.then(function() {
 				log += "Fetching data of " + year +'\r\n';
 				casper.evaluate(function(year){
+					/*
 					var selectList = document.querySelector('#ContentPlaceHolder1_dplYear');
 					selectList.value=year.toString();
 					selectList.onchange();
+					*/
+					var tmp = window.location.search;
+					tmp = tmp.replace(/(y=).*?(&)/,"$1"+year+"$2");
+					window.location.search = tmp;
 				},year);
 			});
 
-			casper.waitFor(function() {
-				return casper.evaluate(function(year) {
-					return year == document.querySelector("#detailJournal > tbody > tr:nth-child(3) > td:nth-child(2)").textContent.substr(0,4)
-				}, year);
-			},
+			//casper.waitFor(function() {
+			//	return casper.evaluate(function(year) {
+			//		return year == document.querySelector("#detailJournal > tbody > tr:nth-child(3) > td:nth-child(2)").textContent.slice(0,-1);
+			//	}, year);
+			//},
+			casper.then(
 			function(){
 				// after get the table
 				var minSection = casper.evaluate(function() {
-					return [].slice.apply(document.querySelectorAll("#categorylist > tbody td.section")).reduce(function(p,c){return c.textContent<p?c.textContent:p},9999);
+					return [].slice.apply(document.querySelectorAll(".section")).reduce(function(p,c){return c.textContent<p?c.textContent:p},9999);
 				});
 				var impact = casper.evaluate(function(){
-					return document.querySelector("#impactfactorlist > tbody > tr:nth-child(2) > td:nth-child(3)").textContent;
-				});
+					return document.querySelector("#impactfactorlist > tbody > tr:nth-child(3) > td:nth-child(3)").textContent;				});
 				log += year + " : section = " + minSection + " : IF = " + impact + '\r\n';
 				echo("[queryIssn] " + year + " : section = " + minSection + " : IF = " + impact );
 				result.push({
