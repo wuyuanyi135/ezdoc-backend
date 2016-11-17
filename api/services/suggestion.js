@@ -28,6 +28,7 @@ var serviceModel = {
                 return;
             }
             var q = query.q;
+			q = q.trim();
             if (!isNaN(q)) {
                 // the query will only return pmid results
                 // Put here rather than above if because other case will query applicant db
