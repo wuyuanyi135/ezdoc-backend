@@ -128,20 +128,9 @@
                 padding-bottom: 0.2in;
                 padding-right: 0.9in;
             }
-			#button__print {
-				bottom: 60px;
-			}
-			
-			#button__pubmed {
-				bottom: 130px;
-			}
-			
-			#button__sci {
-				bottom: 200px;
-			}
-			
-            .button {
+            #button__print {
                 position: fixed;
+                bottom: 60px;
                 right: 30px;
                 padding: 5px 10px 5px 10px;
                 font-size: 24px;
@@ -149,7 +138,7 @@
                 border: solid 1px black;
                 background: white;
             }
-            .button:hover {
+            #button__print:hover {
                 background: #009;
                 color: white;
                 border-color: #950;
@@ -175,7 +164,7 @@
                     padding-bottom: 1in;
                     border: none;
                 }
-                .button {
+                #button__print {
                     display: none;
                 }
             }
@@ -260,16 +249,10 @@
                 </div>
             </div>
         </div>
-		<div id="button__sci" class="button" onclick="openSci()">
-            校对SCI
-        </div>
-		<div id="button__pubmed" class="button" onclick="openPubMed()">
-            校对PUBMED
-        </div>
-        <div id="button__print" class="button" onclick="window.print()">
+
+        <div id="button__print" onclick="window.print()">
             打印
         </div>
-		
         <script type="text/javascript">
             document.querySelector('[contenteditable=true]').onkeydown = (function(e) {
                 // trap the return key being pressed
@@ -296,14 +279,6 @@
                 sel.addRange(range);
                 return false;
             });
-			
-			function openPubMed() {
-				window.open(`https://www.ncbi.nlm.nih.gov/pubmed/?term=${getParameterByName('pmid')}`, '_blank');
-			}
-			
-			function openSci() {
-				window.open(`http://www.fenqubiao.com/Core/JournalDetail.aspx?y=${getParameterByName('year')}&t=${getParameterByName('journal')}`, '_blank');
-			}
           </script>
     </body>
 </html>

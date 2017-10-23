@@ -3,7 +3,7 @@ var config = {
 	username: "wzykdx",
 	password: "wzykdxfqb"
 };
-var fetchInterval = 300;
+var fetchInterval = 500;
 function writeLog(str) {
 	system.stderr.writeLine(str);
 }
@@ -147,7 +147,7 @@ function queryIssn(casper, done, issn, year) {
 			.map(function(item){return item.textContent});*/
 		});
 
-		
+		yearList = ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015'];
 		var keyYears = [];
 		if (_year.length > 0) {
 			// user provides year, filter unavailable years
@@ -193,6 +193,7 @@ function queryIssn(casper, done, issn, year) {
 					return document.querySelector("#impactfactorlist > tbody > tr:nth-child(3) > td:nth-child(3)").textContent;				});
 				log += year + " : section = " + minSection + " : IF = " + impact + '\r\n';
 				echo("[queryIssn] " + year + " : section = " + minSection + " : IF = " + impact );
+				casper.capture(year+".png");
 				result.push({
 					year: year,
 					section: minSection,
